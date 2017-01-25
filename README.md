@@ -43,18 +43,18 @@ In case of a bezier interpolation the coordinates of the left handle (before the
    fps 24  
    o Cone  
    fc location 0  
-   kf 0 0.000000 CONSTANT 
-   kf 25 0.000000 CONSTANT 
-   kf 50 0.000000 CONSTANT 
+   kf 0 0.000000 CONSTANT  
+   kf 25 0.000000 CONSTANT  
+   kf 50 0.000000 CONSTANT  
    fc location 1  
    mod CYCLES  
    kf 0 -1.100000 BEZIER -9.760287 -1.100000 9.760287 -1.100000  
    kf 25 -2.200000 BEZIER 15.239713 -2.200000 34.760288 -2.200000  
    kf 50 -1.100000 BEZIER 40.239712 -1.100000 59.760288 -1.100000  
    fc location 2  
-   kf 0 1.000000 LINEAR
-   kf 25 2.200000 LINEAR
-   kf 50 1.000000 LINEAR
+   kf 0 1.000000 LINEAR  
+   kf 25 2.200000 LINEAR  
+   kf 50 1.000000 LINEAR  
 
 Version 0.1
 =============================
