@@ -28,6 +28,19 @@ from bpy_extras.io_utils import (
 #    Export animation
 #
 
+def write_fcurve(fp, fcu):
+    fp.write("fc %s %s\n" % (fcu.data_path, str(fcu.array_index)))
+    for modifier in fcu.modifiers:
+        fp.write("mod %s\n" % modifier.type)
+    for keyframe in fcu.keyframe_points:
+        fp.write("kf %d %f %s" % (int(keyframe.co.x), keyframe.co.y, keyframe.interpolation))
+        try:
+            if keyframe.interpolation == 'BEZIER':
+                fp.write(" %f %f %f %f" % (keyframe.handle_left.x, keyframe.handle_left.y, keyframe.handle_right.x, keyframe.handle_right.y))
+        except:
+            pass
+        fp.write("\n")    
+
 def export_ani(context, filepath):
     name = os.path.basename(filepath)
     realpath = os.path.realpath(os.path.expanduser(filepath))
@@ -42,18 +55,20 @@ def export_ani(context, filepath):
 
     for object in bpy.data.objects:
         if object.type == 'MESH':
-            fp.write("o %s\n" % object.name)
-            for fcu in object.animation_data.action.fcurves:
-                fp.write("fc %s %s\n" % (fcu.data_path, str(fcu.array_index)))
-                for modifier in fcu.modifiers:
-                    fp.write("mod %s\n" % modifier.type)
-                for keyframe in fcu.keyframe_points:
-                    fp.write("kf %d %f %s" % (int(keyframe.co.x), keyframe.co.y, keyframe.interpolation))
-                    try:
-                        fp.write(" %f %f %f %f" % (keyframe.handle_left.x, keyframe.handle_left.y, keyframe.handle_right.x, keyframe.handle_right.y))
-                    except:
-                        pass
-                    fp.write("\n")
+            header_written = False
+            if hasattr(object.animation_data, 'action'):
+                fp.write("o %s\n" % object.name)
+                header_written = True
+                for fcu in object.animation_data.action.fcurves:
+                    write_fcurve(fp, fcu)
+            print("%d\n" % len(object.material_slots))
+            for ms in object.material_slots:
+                if hasattr(ms.material.animation_data, 'action'):                    
+                    if not header_written:
+                        fp.write("o %s\n" % object.name)
+                        header_written = True
+                    for fcu in ms.material.animation_data.action.fcurves:
+                        write_fcurve(fp, fcu)
 
     print('%s successfully exported' % realpath)
     fp.close()
